@@ -34,6 +34,9 @@ type DatabaseConfig struct {
 }
 
 type RedisConfig struct {
+	// URL is a full redis://... connection string (e.g. from Render).
+	// When set it takes precedence over Addr, Password, and DB.
+	URL      string
 	Addr     string
 	Password string
 	DB       int
@@ -105,6 +108,7 @@ func Load() *Config {
 			MaxConnIdle: getEnvDuration("DATABASE_MAX_CONN_IDLE", 5*time.Minute),
 		},
 		Redis: RedisConfig{
+			URL:      getEnv("REDIS_URL", ""),
 			Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getEnvInt("REDIS_DB", 0),

@@ -1,0 +1,65 @@
+# Render.com Infrastructure-as-Code configuration
+# https://render.com/docs/infrastructure-as-code
+#
+# Services declared here:
+#   - masterfabric-api   Web Service (Docker)
+#   - masterfabric-db    PostgreSQL 16
+#   - masterfabric-redis Redis 7
+
+services:
+  - type: web
+    name: masterfabric-api
+    runtime: docker
+    # Dockerfile lives in deployments/ but needs the project root as build context
+    # so that `COPY . .` inside the Dockerfile can access all Go source files.
+    dockerfilePath: deployments/Dockerfile
+    dockerContext: .
+    # Render routes external traffic to this port; must match SERVER_PORT below.
+    port: 10000
+    healthCheckPath: /health
+    envVars:
+      # Bind to Render's assigned port
+      - key: SERVER_PORT
+        value: "10000"
+
+      # PostgreSQL — injected automatically from the database declared below
+      - key: DATABASE_DSN
+        fromDatabase:
+          name: masterfabric-db
+          property: connectionString
+
+      # Redis — injected automatically from the Redis instance declared below
+      - key: REDIS_URL
+        fromService:
+          name: masterfabric-redis
+          type: redis
+          property: connectionString
+
+      # JWT secret — Render generates a cryptographically secure random value
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Disable GraphQL introspection in production
+      - key: GRAPHQL_INTROSPECTION
+        value: "false"
+
+      # RabbitMQ is not available on Render; use the in-process event bus instead
+      - key: RABBITMQ_ENABLED
+        value: "false"
+
+      # Structured JSON logs (easier to parse in Render's log dashboard)
+      - key: LOG_FORMAT
+        value: json
+
+      - key: LOG_LEVEL
+        value: info
+
+databases:
+  # Render-managed PostgreSQL 16
+  - name: masterfabric-db
+    databaseName: masterfabric
+    plan: free
+
+  # Render-managed Redis 7
+  - name: masterfabric-redis
+    plan: free

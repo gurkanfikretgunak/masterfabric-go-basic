@@ -1,7 +1,7 @@
 {
   "info": {
     "_postman_id": "mf-collection-001",
-    "name": "MasterFabric Go Basic \u2014 GraphQL API",
+    "name": "MasterFabric Go Basic \u2014 GraphQL API v0.0.1",
     "description": "360\u00b0 Postman collection for the MasterFabric Go Basic GraphQL API.\n\nCovers:\n- Health check\n- Auth: Register, Login, Refresh Tokens, Logout\n- User: Me (profile), Update Profile, Delete Account\n- Settings: My Settings, Update My Settings, App Settings\n- Edge-case / error-path requests\n\nAll token management is automatic via collection scripts.\nImport `masterfabric.environment.json` alongside this file.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
