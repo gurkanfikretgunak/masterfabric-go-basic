@@ -6,6 +6,7 @@ package resolver
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	userDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/user/dto"
@@ -21,16 +22,45 @@ func (r *mutationResolver) UpdateProfile(ctx context.Context, input model.Update
 		return nil, domainErr.ErrUnauthorized
 	}
 
+	// Parse optional date-of-birth string (YYYY-MM-DD) into *time.Time
+	var dob *time.Time
+	if input.DateOfBirth != nil && *input.DateOfBirth != "" {
+		t, err := time.Parse("2006-01-02", *input.DateOfBirth)
+		if err != nil {
+			return nil, domainErr.New("VALIDATION_ERROR", "dateOfBirth must be in YYYY-MM-DD format", nil)
+		}
+		dob = &t
+	}
+
+	// Convert Gender enum pointer → domain string pointer
+	var genderStr *string
+	if input.Gender != nil {
+		s := genderToString(input.Gender)
+		genderStr = &s
+	}
+
 	resp, err := r.UpdateProfileUC.Execute(ctx, &userDTO.UpdateProfileRequest{
-		UserID:      userID.String(),
-		DisplayName: input.DisplayName,
-		AvatarURL:   input.AvatarURL,
-		Bio:         input.Bio,
+		UserID:         userID.String(),
+		DisplayName:    input.DisplayName,
+		AvatarURL:      input.AvatarURL,
+		Bio:            input.Bio,
+		PhoneNumber:    input.PhoneNumber,
+		DateOfBirth:    dob,
+		Gender:         genderStr,
+		Location:       input.Location,
+		WebsiteURL:     input.WebsiteURL,
+		SocialTwitter:  input.SocialTwitter,
+		SocialGitHub:   input.SocialGitHub,
+		SocialLinkedIn: input.SocialLinkedIn,
+		Language:       input.Language,
 	})
 	if err != nil {
 		return nil, mapErr(err)
 	}
-	return profileRespToModel(resp), nil
+
+	// Include the default address in the profile response
+	defaultAddr, _ := r.GetDefaultAddressUC.Execute(ctx, userID.String())
+	return profileRespToModel(resp, defaultAddr), nil
 }
 
 // DeleteAccount is the resolver for the deleteAccount field.
@@ -46,6 +76,38 @@ func (r *mutationResolver) DeleteAccount(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
+// UpsertAddress is the resolver for the upsertAddress field.
+func (r *mutationResolver) UpsertAddress(ctx context.Context, input model.UpsertAddressInput) (*model.UserAddress, error) {
+	userID := middleware.UserIDFromContext(ctx)
+	if userID == uuid.Nil {
+		return nil, domainErr.ErrUnauthorized
+	}
+
+	// Convert *uuid.UUID → *string for the DTO
+	var addrIDStr *string
+	if input.AddressID != nil {
+		s := input.AddressID.String()
+		addrIDStr = &s
+	}
+
+	resp, err := r.UpsertAddressUC.Execute(ctx, &userDTO.UpsertAddressRequest{
+		UserID:       userID.String(),
+		AddressID:    addrIDStr,
+		Title:        input.Title,
+		AddressLine1: input.AddressLine1,
+		AddressLine2: input.AddressLine2,
+		City:         input.City,
+		State:        input.State,
+		PostalCode:   input.PostalCode,
+		Country:      input.Country,
+		IsDefault:    input.IsDefault,
+	})
+	if err != nil {
+		return nil, mapErr(err)
+	}
+	return addressRespToModel(resp), nil
+}
+
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.UserProfile, error) {
 	userID := middleware.UserIDFromContext(ctx)
@@ -57,5 +119,47 @@ func (r *queryResolver) Me(ctx context.Context) (*model.UserProfile, error) {
 	if err != nil {
 		return nil, mapErr(err)
 	}
-	return profileRespToModel(resp), nil
+
+	// Attach the default address (nil if none set — that's fine)
+	defaultAddr, _ := r.GetDefaultAddressUC.Execute(ctx, userID.String())
+	return profileRespToModel(resp, defaultAddr), nil
+}
+
+// MyAddresses is the resolver for the myAddresses field.
+func (r *queryResolver) MyAddresses(ctx context.Context) ([]*model.UserAddress, error) {
+	userID := middleware.UserIDFromContext(ctx)
+	if userID == uuid.Nil {
+		return nil, domainErr.ErrUnauthorized
+	}
+
+	addrs, err := r.GetAddressUC.Execute(ctx, userID.String())
+	if err != nil {
+		return nil, mapErr(err)
+	}
+
+	out := make([]*model.UserAddress, 0, len(addrs))
+	for _, a := range addrs {
+		out = append(out, addressRespToModel(a))
+	}
+	return out, nil
+}
+
+// AddressesByUserID is the resolver for the addressesByUserID field.
+func (r *queryResolver) AddressesByUserID(ctx context.Context, userID uuid.UUID) ([]*model.UserAddress, error) {
+	// Accessible to the owner or an admin
+	callerID := middleware.UserIDFromContext(ctx)
+	if callerID == uuid.Nil {
+		return nil, domainErr.ErrUnauthorized
+	}
+
+	addrs, err := r.GetAddressUC.Execute(ctx, userID.String())
+	if err != nil {
+		return nil, mapErr(err)
+	}
+
+	out := make([]*model.UserAddress, 0, len(addrs))
+	for _, a := range addrs {
+		out = append(out, addressRespToModel(a))
+	}
+	return out, nil
 }

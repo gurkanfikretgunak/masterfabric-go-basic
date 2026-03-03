@@ -147,14 +147,23 @@ func (uc *ChangeUserRoleUseCase) Execute(ctx context.Context, req *dto.ChangeRol
 
 func userToAdminDTO(u *model.User) *dto.AdminUserResponse {
 	return &dto.AdminUserResponse{
-		ID:          u.ID.String(),
-		Email:       u.Email,
-		DisplayName: u.DisplayName,
-		AvatarURL:   u.AvatarURL,
-		Bio:         u.Bio,
-		Status:      string(u.Status),
-		Role:        string(u.Role),
-		CreatedAt:   u.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   u.UpdatedAt.Format(time.RFC3339),
+		ID:             u.ID.String(),
+		Email:          u.Email,
+		DisplayName:    u.DisplayName,
+		AvatarURL:      u.AvatarURL,
+		Bio:            u.Bio,
+		Status:         string(u.Status),
+		Role:           string(u.Role),
+		CreatedAt:      u.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:      u.UpdatedAt.Format(time.RFC3339),
+		PhoneNumber:    u.PhoneNumber,
+		DateOfBirth:    u.DateOfBirth,
+		Gender:         string(u.Gender),
+		Location:       u.Location,
+		WebsiteURL:     u.WebsiteURL,
+		SocialTwitter:  u.SocialTwitter,
+		SocialGitHub:   u.SocialGitHub,
+		SocialLinkedIn: u.SocialLinkedIn,
+		Language:       u.Language,
 	}
 }

@@ -31,6 +31,7 @@ import (
 	"github.com/masterfabric/masterfabric_go_basic/internal/infrastructure/postgres/migrations"
 	settingsPG "github.com/masterfabric/masterfabric_go_basic/internal/infrastructure/postgres/settings"
 	"github.com/masterfabric/masterfabric_go_basic/internal/infrastructure/rabbitmq"
+	infraRedis "github.com/masterfabric/masterfabric_go_basic/internal/infrastructure/redis"
 	"github.com/masterfabric/masterfabric_go_basic/internal/shared/cache"
 	"github.com/masterfabric/masterfabric_go_basic/internal/shared/config"
 	"github.com/masterfabric/masterfabric_go_basic/internal/shared/database"
@@ -69,6 +70,7 @@ func main() {
 	if err != nil {
 		log.Warn("redis unavailable — tokens will not be blacklisted", slog.Any("error", err))
 	}
+	cacheHandler := infraRedis.NewCacheHandler(redisClient)
 
 	// ── Event bus ───────────────────────────────────────────────────────────
 	var eventBus events.EventBus
@@ -91,7 +93,7 @@ func main() {
 	userSettingsRepo := settingsPG.NewUserSettingsRepo(pool)
 	appSettingsRepo := settingsPG.NewAppSettingsRepo(pool)
 
-	jwtSvc := infraAuth.NewJWTService(cfg.JWT, redisClient)
+	jwtSvc := infraAuth.NewJWTService(cfg.JWT, cacheHandler)
 
 	// ── Resolver (DI root) ──────────────────────────────────────────────────
 	res := &resolver.Resolver{
@@ -100,9 +102,12 @@ func main() {
 		RefreshUC:  authUC.NewRefreshUseCase(userRepo, jwtSvc),
 		LogoutUC:   authUC.NewLogoutUseCase(jwtSvc),
 
-		GetProfileUC:    userUC.NewGetProfileUseCase(userRepo),
-		UpdateProfileUC: userUC.NewUpdateProfileUseCase(userRepo, eventBus),
-		DeleteAccountUC: userUC.NewDeleteAccountUseCase(userRepo, eventBus),
+		GetProfileUC:        userUC.NewGetProfileUseCase(userRepo),
+		UpdateProfileUC:     userUC.NewUpdateProfileUseCase(userRepo, eventBus),
+		DeleteAccountUC:     userUC.NewDeleteAccountUseCase(userRepo, eventBus),
+		GetAddressUC:        userUC.NewGetAddressUseCase(userRepo),
+		GetDefaultAddressUC: userUC.NewGetDefaultAddressUseCase(userRepo),
+		UpsertAddressUC:     userUC.NewUpsertAddressUseCase(userRepo),
 
 		GetUserSettingsUC:    settingsUC.NewGetUserSettingsUseCase(userSettingsRepo),
 		UpdateUserSettingsUC: settingsUC.NewUpdateUserSettingsUseCase(userSettingsRepo, eventBus),

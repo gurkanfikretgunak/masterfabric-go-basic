@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/masterfabric/masterfabric_go_basic/internal/application/user/dto"
 	"github.com/masterfabric/masterfabric_go_basic/internal/domain/iam/event"
+	"github.com/masterfabric/masterfabric_go_basic/internal/domain/iam/model"
 	"github.com/masterfabric/masterfabric_go_basic/internal/domain/iam/repository"
 	domainErr "github.com/masterfabric/masterfabric_go_basic/internal/shared/errors"
 	"github.com/masterfabric/masterfabric_go_basic/internal/shared/events"
@@ -35,17 +36,7 @@ func (uc *GetProfileUseCase) Execute(ctx context.Context, userID string) (*dto.U
 		return nil, domainErr.ErrUserNotFound
 	}
 
-	return &dto.UserProfileResponse{
-		ID:          user.ID.String(),
-		Email:       user.Email,
-		DisplayName: user.DisplayName,
-		AvatarURL:   user.AvatarURL,
-		Bio:         user.Bio,
-		Status:      string(user.Status),
-		Role:        string(user.Role),
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-	}, nil
+	return userToProfileResponse(user), nil
 }
 
 // UpdateProfileUseCase modifies mutable user fields.
@@ -71,7 +62,7 @@ func (uc *UpdateProfileUseCase) Execute(ctx context.Context, req *dto.UpdateProf
 		return nil, domainErr.ErrUserNotFound
 	}
 
-	// Apply partial updates
+	// Apply partial updates — only overwrite fields that were provided
 	if req.DisplayName != nil {
 		user.DisplayName = *req.DisplayName
 	}
@@ -80,6 +71,33 @@ func (uc *UpdateProfileUseCase) Execute(ctx context.Context, req *dto.UpdateProf
 	}
 	if req.Bio != nil {
 		user.Bio = *req.Bio
+	}
+	if req.PhoneNumber != nil {
+		user.PhoneNumber = *req.PhoneNumber
+	}
+	if req.DateOfBirth != nil {
+		user.DateOfBirth = req.DateOfBirth
+	}
+	if req.Gender != nil {
+		user.Gender = model.UserGender(*req.Gender)
+	}
+	if req.Location != nil {
+		user.Location = *req.Location
+	}
+	if req.WebsiteURL != nil {
+		user.WebsiteURL = *req.WebsiteURL
+	}
+	if req.SocialTwitter != nil {
+		user.SocialTwitter = *req.SocialTwitter
+	}
+	if req.SocialGitHub != nil {
+		user.SocialGitHub = *req.SocialGitHub
+	}
+	if req.SocialLinkedIn != nil {
+		user.SocialLinkedIn = *req.SocialLinkedIn
+	}
+	if req.Language != nil {
+		user.Language = *req.Language
 	}
 	user.UpdatedAt = time.Now().UTC()
 
@@ -92,17 +110,7 @@ func (uc *UpdateProfileUseCase) Execute(ctx context.Context, req *dto.UpdateProf
 		Payload: map[string]string{"user_id": user.ID.String()},
 	})
 
-	return &dto.UserProfileResponse{
-		ID:          user.ID.String(),
-		Email:       user.Email,
-		DisplayName: user.DisplayName,
-		AvatarURL:   user.AvatarURL,
-		Bio:         user.Bio,
-		Status:      string(user.Status),
-		Role:        string(user.Role),
-		CreatedAt:   user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   user.UpdatedAt.Format(time.RFC3339),
-	}, nil
+	return userToProfileResponse(user), nil
 }
 
 // DeleteAccountUseCase permanently removes a user.
@@ -132,4 +140,28 @@ func (uc *DeleteAccountUseCase) Execute(ctx context.Context, userID string) erro
 		Payload: map[string]string{"user_id": userID},
 	})
 	return nil
+}
+
+// userToProfileResponse maps a domain User to the UserProfileResponse DTO.
+func userToProfileResponse(u *model.User) *dto.UserProfileResponse {
+	return &dto.UserProfileResponse{
+		ID:             u.ID.String(),
+		Email:          u.Email,
+		DisplayName:    u.DisplayName,
+		AvatarURL:      u.AvatarURL,
+		Bio:            u.Bio,
+		Status:         string(u.Status),
+		Role:           string(u.Role),
+		CreatedAt:      u.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:      u.UpdatedAt.Format(time.RFC3339),
+		PhoneNumber:    u.PhoneNumber,
+		DateOfBirth:    u.DateOfBirth,
+		Gender:         string(u.Gender),
+		Location:       u.Location,
+		WebsiteURL:     u.WebsiteURL,
+		SocialTwitter:  u.SocialTwitter,
+		SocialGitHub:   u.SocialGitHub,
+		SocialLinkedIn: u.SocialLinkedIn,
+		Language:       u.Language,
+	}
 }

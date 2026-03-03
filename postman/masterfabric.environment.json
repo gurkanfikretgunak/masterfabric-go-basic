@@ -79,6 +79,18 @@
       "value": "",
       "type": "secret",
       "enabled": true
+    },
+    {
+      "key": "addressId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "addressId2",
+      "value": "",
+      "type": "default",
+      "enabled": true
     }
   ],
   "_postman_variable_scope": "environment",

@@ -1,16 +1,27 @@
 package dto
 
+import "time"
+
 // AdminUserResponse is a full user view returned to admin callers.
 type AdminUserResponse struct {
-	ID          string `json:"id"`
-	Email       string `json:"email"`
-	DisplayName string `json:"display_name"`
-	AvatarURL   string `json:"avatar_url"`
-	Bio         string `json:"bio"`
-	Status      string `json:"status"`
-	Role        string `json:"role"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	ID             string     `json:"id"`
+	Email          string     `json:"email"`
+	DisplayName    string     `json:"display_name"`
+	AvatarURL      string     `json:"avatar_url"`
+	Bio            string     `json:"bio"`
+	Status         string     `json:"status"`
+	Role           string     `json:"role"`
+	CreatedAt      string     `json:"created_at"`
+	UpdatedAt      string     `json:"updated_at"`
+	PhoneNumber    string     `json:"phone_number"`
+	DateOfBirth    *time.Time `json:"date_of_birth,omitempty"`
+	Gender         string     `json:"gender"`
+	Location       string     `json:"location"`
+	WebsiteURL     string     `json:"website_url"`
+	SocialTwitter  string     `json:"social_twitter"`
+	SocialGitHub   string     `json:"social_github"`
+	SocialLinkedIn string     `json:"social_linkedin"`
+	Language       string     `json:"language"`
 }
 
 // AdminUserListResponse wraps paginated user results.

@@ -6,7 +6,6 @@ package resolver
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 	adminDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/admin/dto"
@@ -69,36 +68,4 @@ func (r *queryResolver) AdminUser(ctx context.Context, id uuid.UUID) (*model.Adm
 		return nil, mapErr(err)
 	}
 	return adminUserToModel(resp), nil
-}
-
-// ---------------------------------------------------------------------------
-// admin helpers (kept here because they are admin-specific and not used elsewhere)
-// ---------------------------------------------------------------------------
-
-func adminUserToModel(u *adminDTO.AdminUserResponse) *model.AdminUserProfile {
-	id, _ := uuid.Parse(u.ID)
-	createdAt, _ := time.Parse(time.RFC3339, u.CreatedAt)
-	updatedAt, _ := time.Parse(time.RFC3339, u.UpdatedAt)
-	return &model.AdminUserProfile{
-		ID:          id,
-		Email:       u.Email,
-		DisplayName: u.DisplayName,
-		AvatarURL:   u.AvatarURL,
-		Bio:         u.Bio,
-		Status:      model.UserStatus(toUpperStatus(u.Status)),
-		Role:        graphqlRole(u.Role),
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
-	}
-}
-
-func graphqlRoleToString(r model.UserRole) string {
-	switch r {
-	case model.UserRoleAdmin:
-		return "admin"
-	case model.UserRoleModerator:
-		return "moderator"
-	default:
-		return "user"
-	}
 }

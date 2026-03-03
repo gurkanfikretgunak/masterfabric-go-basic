@@ -19,15 +19,24 @@ type AdminUserList struct {
 }
 
 type AdminUserProfile struct {
-	ID          uuid.UUID  `json:"id"`
-	Email       string     `json:"email"`
-	DisplayName string     `json:"displayName"`
-	AvatarURL   string     `json:"avatarURL"`
-	Bio         string     `json:"bio"`
-	Status      UserStatus `json:"status"`
-	Role        UserRole   `json:"role"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
+	ID             uuid.UUID  `json:"id"`
+	Email          string     `json:"email"`
+	DisplayName    string     `json:"displayName"`
+	AvatarURL      string     `json:"avatarURL"`
+	Bio            string     `json:"bio"`
+	Status         UserStatus `json:"status"`
+	Role           UserRole   `json:"role"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	UpdatedAt      time.Time  `json:"updatedAt"`
+	PhoneNumber    string     `json:"phoneNumber"`
+	DateOfBirth    *string    `json:"dateOfBirth,omitempty"`
+	Gender         Gender     `json:"gender"`
+	Location       string     `json:"location"`
+	WebsiteURL     string     `json:"websiteURL"`
+	SocialTwitter  string     `json:"socialTwitter"`
+	SocialGitHub   string     `json:"socialGitHub"`
+	SocialLinkedIn string     `json:"socialLinkedIn"`
+	Language       string     `json:"language"`
 }
 
 type AppSetting struct {
@@ -80,21 +89,68 @@ type RegisterInput struct {
 }
 
 type UpdateProfileInput struct {
-	DisplayName *string `json:"displayName,omitempty"`
-	AvatarURL   *string `json:"avatarURL,omitempty"`
-	Bio         *string `json:"bio,omitempty"`
+	DisplayName    *string `json:"displayName,omitempty"`
+	AvatarURL      *string `json:"avatarURL,omitempty"`
+	Bio            *string `json:"bio,omitempty"`
+	PhoneNumber    *string `json:"phoneNumber,omitempty"`
+	DateOfBirth    *string `json:"dateOfBirth,omitempty"`
+	Gender         *Gender `json:"gender,omitempty"`
+	Location       *string `json:"location,omitempty"`
+	WebsiteURL     *string `json:"websiteURL,omitempty"`
+	SocialTwitter  *string `json:"socialTwitter,omitempty"`
+	SocialGitHub   *string `json:"socialGitHub,omitempty"`
+	SocialLinkedIn *string `json:"socialLinkedIn,omitempty"`
+	Language       *string `json:"language,omitempty"`
+}
+
+type UpsertAddressInput struct {
+	AddressID    *uuid.UUID `json:"addressID,omitempty"`
+	Title        *string    `json:"title,omitempty"`
+	AddressLine1 *string    `json:"addressLine1,omitempty"`
+	AddressLine2 *string    `json:"addressLine2,omitempty"`
+	City         *string    `json:"city,omitempty"`
+	State        *string    `json:"state,omitempty"`
+	PostalCode   *string    `json:"postalCode,omitempty"`
+	Country      *string    `json:"country,omitempty"`
+	IsDefault    *bool      `json:"isDefault,omitempty"`
+}
+
+type UserAddress struct {
+	ID           uuid.UUID `json:"id"`
+	UserID       uuid.UUID `json:"userID"`
+	Title        string    `json:"title"`
+	AddressLine1 string    `json:"addressLine1"`
+	AddressLine2 string    `json:"addressLine2"`
+	City         string    `json:"city"`
+	State        string    `json:"state"`
+	PostalCode   string    `json:"postalCode"`
+	Country      string    `json:"country"`
+	IsDefault    bool      `json:"isDefault"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 }
 
 type UserProfile struct {
-	ID          uuid.UUID  `json:"id"`
-	Email       string     `json:"email"`
-	DisplayName string     `json:"displayName"`
-	AvatarURL   string     `json:"avatarURL"`
-	Bio         string     `json:"bio"`
-	Status      UserStatus `json:"status"`
-	Role        UserRole   `json:"role"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
+	ID             uuid.UUID  `json:"id"`
+	Email          string     `json:"email"`
+	DisplayName    string     `json:"displayName"`
+	AvatarURL      string     `json:"avatarURL"`
+	Bio            string     `json:"bio"`
+	Status         UserStatus `json:"status"`
+	Role           UserRole   `json:"role"`
+	CreatedAt      time.Time  `json:"createdAt"`
+	UpdatedAt      time.Time  `json:"updatedAt"`
+	PhoneNumber    string     `json:"phoneNumber"`
+	DateOfBirth    *string    `json:"dateOfBirth,omitempty"`
+	Gender         Gender     `json:"gender"`
+	Location       string     `json:"location"`
+	WebsiteURL     string     `json:"websiteURL"`
+	SocialTwitter  string     `json:"socialTwitter"`
+	SocialGitHub   string     `json:"socialGitHub"`
+	SocialLinkedIn string     `json:"socialLinkedIn"`
+	Language       string     `json:"language"`
+	// The user's default address, if one has been set.
+	Address *UserAddress `json:"address,omitempty"`
 }
 
 type UserSettingsInput struct {
@@ -112,6 +168,53 @@ type UserSettingsPayload struct {
 	Language        string    `json:"language"`
 	Timezone        string    `json:"timezone"`
 	UpdatedAt       time.Time `json:"updatedAt"`
+}
+
+type Gender string
+
+const (
+	GenderMale           Gender = "MALE"
+	GenderFemale         Gender = "FEMALE"
+	GenderOther          Gender = "OTHER"
+	GenderPreferNotToSay Gender = "PREFER_NOT_TO_SAY"
+	GenderUnspecified    Gender = "UNSPECIFIED"
+)
+
+var AllGender = []Gender{
+	GenderMale,
+	GenderFemale,
+	GenderOther,
+	GenderPreferNotToSay,
+	GenderUnspecified,
+}
+
+func (e Gender) IsValid() bool {
+	switch e {
+	case GenderMale, GenderFemale, GenderOther, GenderPreferNotToSay, GenderUnspecified:
+		return true
+	}
+	return false
+}
+
+func (e Gender) String() string {
+	return string(e)
+}
+
+func (e *Gender) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Gender(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Gender", str)
+	}
+	return nil
+}
+
+func (e Gender) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Theme string

@@ -875,7 +875,7 @@
             "body": {
               "mode": "graphql",
               "graphql": {
-                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n  }\n}",
+                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n    phoneNumber\n    dateOfBirth\n    gender\n    location\n    websiteURL\n    socialTwitter\n    socialGitHub\n    socialLinkedIn\n    language\n    address {\n      id\n      title\n      addressLine1\n      city\n      country\n      isDefault\n    }\n  }\n}",
                 "variables": "{}"
               }
             },
@@ -934,7 +934,7 @@
             "body": {
               "mode": "graphql",
               "graphql": {
-                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n  }\n}",
+                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n    phoneNumber\n    dateOfBirth\n    gender\n    location\n    websiteURL\n    socialTwitter\n    socialGitHub\n    socialLinkedIn\n    language\n    address {\n      id\n      title\n      addressLine1\n      city\n      country\n      isDefault\n    }\n  }\n}",
                 "variables": "{}"
               }
             },
@@ -999,6 +999,31 @@
                   "  pm.expect(new Date(up.updatedAt).toString()).to.not.equal('Invalid Date');",
                   "});",
                   "",
+                  "pm.test('updateProfile.phoneNumber is set', function () {",
+                  "  const up = pm.response.json().data.updateProfile;",
+                  "  pm.expect(up.phoneNumber).to.equal('+1-555-0100');",
+                  "});",
+                  "",
+                  "pm.test('updateProfile.dateOfBirth is set', function () {",
+                  "  const up = pm.response.json().data.updateProfile;",
+                  "  pm.expect(up.dateOfBirth).to.equal('1990-06-15');",
+                  "});",
+                  "",
+                  "pm.test('updateProfile.gender is MALE', function () {",
+                  "  const up = pm.response.json().data.updateProfile;",
+                  "  pm.expect(up.gender).to.equal('MALE');",
+                  "});",
+                  "",
+                  "pm.test('updateProfile.location is set', function () {",
+                  "  const up = pm.response.json().data.updateProfile;",
+                  "  pm.expect(up.location).to.equal('Istanbul, Turkey');",
+                  "});",
+                  "",
+                  "pm.test('updateProfile.language is set', function () {",
+                  "  const up = pm.response.json().data.updateProfile;",
+                  "  pm.expect(up.language).to.equal('en');",
+                  "});",
+                  "",
                   "// \u2500\u2500 Persist updated display name for later assertions \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
                   "const up = pm.response.json().data.updateProfile;",
                   "if (up && up.displayName) {",
@@ -1023,8 +1048,8 @@
             "body": {
               "mode": "graphql",
               "graphql": {
-                "query": "mutation UpdateProfile($input: UpdateProfileInput!) {\n  updateProfile(input: $input) {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n  }\n}",
-                "variables": "{\n  \"input\": {\n    \"displayName\": \"{{updatedDisplayName}}\",\n    \"avatarURL\": \"https://example.com/avatar.png\",\n    \"bio\": \"Building awesome things with Go and GraphQL.\"\n  }\n}"
+                "query": "mutation UpdateProfile($input: UpdateProfileInput!) {\n  updateProfile(input: $input) {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n    phoneNumber\n    dateOfBirth\n    gender\n    location\n    websiteURL\n    socialTwitter\n    socialGitHub\n    socialLinkedIn\n    language\n    address {\n      id\n      title\n      addressLine1\n      city\n      country\n      isDefault\n    }\n  }\n}",
+                "variables": "{\n  \"input\": {\n    \"displayName\": \"{{updatedDisplayName}}\",\n    \"avatarURL\": \"https://example.com/avatar.png\",\n    \"bio\": \"Building awesome things with Go and GraphQL.\",\n    \"phoneNumber\": \"+1-555-0100\",\n    \"dateOfBirth\": \"1990-06-15\",\n    \"gender\": \"MALE\",\n    \"location\": \"Istanbul, Turkey\",\n    \"websiteURL\": \"https://example.com\",\n    \"socialTwitter\": \"@mytwitterhandle\",\n    \"socialGitHub\": \"mygithubhandle\",\n    \"socialLinkedIn\": \"mylinkedinhandle\",\n    \"language\": \"en\"\n  }\n}"
               }
             },
             "url": {
@@ -1160,7 +1185,7 @@
             "body": {
               "mode": "graphql",
               "graphql": {
-                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n  }\n}",
+                "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    avatarURL\n    bio\n    status\n    createdAt\n    updatedAt\n    phoneNumber\n    dateOfBirth\n    gender\n    location\n    websiteURL\n    socialTwitter\n    socialGitHub\n    socialLinkedIn\n    language\n    address {\n      id\n      title\n      addressLine1\n      city\n      country\n      isDefault\n    }\n  }\n}",
                 "variables": "{}"
               }
             },
@@ -1172,6 +1197,653 @@
             },
             "description": "Verify that the profile changes from the previous update requests are reflected when fetching the profile again."
           }
+        },
+        {
+          "name": "\ud83d\udccd Address",
+          "item": [
+            {
+              "name": "Upsert Address \u2014 Create (Home, default)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[UpsertAddress create pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "console.log('[UpsertAddress create pre-request] creating home address for userId:', pm.environment.get('userId'));"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.upsertAddress exists', function () {",
+                      "  pm.expect(pm.response.json().data).to.have.property('upsertAddress');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.id is a valid UUID', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.title is Home', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.title).to.equal('Home');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.city is San Francisco', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.city).to.equal('San Francisco');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.country is US', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.country).to.equal('US');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.isDefault is true', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.isDefault).to.equal(true);",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.userID matches environment userId', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.userID).to.equal(pm.environment.get('userId'));",
+                      "});",
+                      "",
+                      "// \u2500\u2500 Persist addressId for subsequent requests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+                      "const addr = pm.response.json().data.upsertAddress;",
+                      "if (addr && addr.id) {",
+                      "  pm.environment.set('addressId', addr.id);",
+                      "  console.log('[UpsertAddress create] addressId saved:', addr.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation UpsertAddress($input: UpsertAddressInput!) {\n  upsertAddress(input: $input) {\n    id\n    userID\n    title\n    addressLine1\n    addressLine2\n    city\n    state\n    postalCode\n    country\n    isDefault\n    createdAt\n    updatedAt\n  }\n}",
+                    "variables": "{\n  \"input\": {\n    \"title\": \"Home\",\n    \"addressLine1\": \"123 Main Street\",\n    \"addressLine2\": \"Apt 4B\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"postalCode\": \"94102\",\n    \"country\": \"US\",\n    \"isDefault\": true\n  }\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Create a new default home address. The returned `id` is saved to `addressId` environment variable for use in subsequent requests."
+              }
+            },
+            {
+              "name": "My Addresses",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[MyAddresses pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "const addressId = pm.environment.get('addressId');",
+                      "if (!addressId) {",
+                      "  throw new Error('[MyAddresses pre-request] addressId is not set. Run Upsert Address \u2014 Create first.');",
+                      "}",
+                      "console.log('[MyAddresses pre-request] fetching addresses for userId:', pm.environment.get('userId'));"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.myAddresses is an array', function () {",
+                      "  pm.expect(pm.response.json().data.myAddresses).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test('myAddresses contains at least one address', function () {",
+                      "  pm.expect(pm.response.json().data.myAddresses.length).to.be.above(0);",
+                      "});",
+                      "",
+                      "pm.test('myAddresses contains the created address', function () {",
+                      "  const addresses = pm.response.json().data.myAddresses;",
+                      "  const addressId = pm.environment.get('addressId');",
+                      "  const found = addresses.some(function (a) { return a.id === addressId; });",
+                      "  pm.expect(found).to.be.true;",
+                      "});",
+                      "",
+                      "pm.test('each address has required fields', function () {",
+                      "  const addresses = pm.response.json().data.myAddresses;",
+                      "  addresses.forEach(function (a) {",
+                      "    pm.expect(a).to.have.property('id').that.is.a('string');",
+                      "    pm.expect(a).to.have.property('userID').that.is.a('string');",
+                      "    pm.expect(a).to.have.property('title').that.is.a('string');",
+                      "    pm.expect(a).to.have.property('isDefault').that.is.a('boolean');",
+                      "  });",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query MyAddresses {\n  myAddresses {\n    id\n    userID\n    title\n    addressLine1\n    addressLine2\n    city\n    state\n    postalCode\n    country\n    isDefault\n    createdAt\n    updatedAt\n  }\n}",
+                    "variables": "{}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Fetch all addresses belonging to the authenticated user."
+              }
+            },
+            {
+              "name": "Me \u2014 With Address",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[Me with address pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "console.log('[Me with address pre-request] verifying default address is on profile.');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.me exists', function () {",
+                      "  pm.expect(pm.response.json().data).to.have.property('me');",
+                      "});",
+                      "",
+                      "pm.test('me.address is not null (default address set)', function () {",
+                      "  const me = pm.response.json().data.me;",
+                      "  pm.expect(me.address).to.not.be.null;",
+                      "});",
+                      "",
+                      "pm.test('me.address.id matches the created addressId', function () {",
+                      "  const me = pm.response.json().data.me;",
+                      "  pm.expect(me.address.id).to.equal(pm.environment.get('addressId'));",
+                      "});",
+                      "",
+                      "pm.test('me.address.isDefault is true', function () {",
+                      "  const me = pm.response.json().data.me;",
+                      "  pm.expect(me.address.isDefault).to.equal(true);",
+                      "});",
+                      "",
+                      "pm.test('me.address.city is San Francisco', function () {",
+                      "  const me = pm.response.json().data.me;",
+                      "  pm.expect(me.address.city).to.equal('San Francisco');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    address {\n      id\n      title\n      addressLine1\n      city\n      state\n      postalCode\n      country\n      isDefault\n    }\n  }\n}",
+                    "variables": "{}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Fetch the `me` profile and verify that the nested `address` field is populated with the default address."
+              }
+            },
+            {
+              "name": "Upsert Address \u2014 Update (change city)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[UpsertAddress update pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "const addressId = pm.environment.get('addressId');",
+                      "if (!addressId) {",
+                      "  throw new Error('[UpsertAddress update pre-request] addressId is not set. Run Upsert Address \u2014 Create first.');",
+                      "}",
+                      "console.log('[UpsertAddress update pre-request] updating addressId:', addressId);"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.upsertAddress exists', function () {",
+                      "  pm.expect(pm.response.json().data).to.have.property('upsertAddress');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.id is unchanged', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.id).to.equal(pm.environment.get('addressId'));",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.city is updated to New York', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.city).to.equal('New York');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.postalCode is updated', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.postalCode).to.equal('10001');",
+                      "});",
+                      "",
+                      "pm.test('upsertAddress.isDefault remains true', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.isDefault).to.equal(true);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation UpsertAddress($input: UpsertAddressInput!) {\n  upsertAddress(input: $input) {\n    id\n    userID\n    title\n    addressLine1\n    city\n    state\n    postalCode\n    country\n    isDefault\n    updatedAt\n  }\n}",
+                    "variables": "{\n  \"input\": {\n    \"addressID\": \"{{addressId}}\",\n    \"title\": \"Home\",\n    \"addressLine1\": \"456 Broadway\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"postalCode\": \"10001\",\n    \"country\": \"US\",\n    \"isDefault\": true\n  }\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Update the existing address (identified by `addressID`) to change the city from San Francisco to New York."
+              }
+            },
+            {
+              "name": "Upsert Address \u2014 Create Second (Work, non-default)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[UpsertAddress second pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "console.log('[UpsertAddress second pre-request] creating a second (work) address.');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.upsertAddress exists', function () {",
+                      "  pm.expect(pm.response.json().data).to.have.property('upsertAddress');",
+                      "});",
+                      "",
+                      "pm.test('second address has a different id from the first', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.id).to.not.equal(pm.environment.get('addressId'));",
+                      "});",
+                      "",
+                      "pm.test('second address title is Work', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.title).to.equal('Work');",
+                      "});",
+                      "",
+                      "pm.test('second address isDefault is false', function () {",
+                      "  const addr = pm.response.json().data.upsertAddress;",
+                      "  pm.expect(addr.isDefault).to.equal(false);",
+                      "});",
+                      "",
+                      "// \u2500\u2500 Save second address id for cleanup reference \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+                      "const addr = pm.response.json().data.upsertAddress;",
+                      "if (addr && addr.id) {",
+                      "  pm.environment.set('addressId2', addr.id);",
+                      "  console.log('[UpsertAddress second] addressId2 saved:', addr.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation UpsertAddress($input: UpsertAddressInput!) {\n  upsertAddress(input: $input) {\n    id\n    userID\n    title\n    addressLine1\n    city\n    state\n    postalCode\n    country\n    isDefault\n    createdAt\n    updatedAt\n  }\n}",
+                    "variables": "{\n  \"input\": {\n    \"title\": \"Work\",\n    \"addressLine1\": \"1 Infinite Loop\",\n    \"city\": \"Cupertino\",\n    \"state\": \"CA\",\n    \"postalCode\": \"95014\",\n    \"country\": \"US\",\n    \"isDefault\": false\n  }\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Create a second non-default work address. Verifies that multiple addresses can be stored per user."
+              }
+            },
+            {
+              "name": "My Addresses \u2014 After Second (verify two addresses)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[MyAddresses after second pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "console.log('[MyAddresses after second pre-request] verifying two addresses exist.');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('myAddresses has exactly two addresses', function () {",
+                      "  pm.expect(pm.response.json().data.myAddresses.length).to.equal(2);",
+                      "});",
+                      "",
+                      "pm.test('exactly one address is default', function () {",
+                      "  const addresses = pm.response.json().data.myAddresses;",
+                      "  const defaultAddresses = addresses.filter(function (a) { return a.isDefault; });",
+                      "  pm.expect(defaultAddresses.length).to.equal(1);",
+                      "});",
+                      "",
+                      "pm.test('the default address is the first one (Home)', function () {",
+                      "  const addresses = pm.response.json().data.myAddresses;",
+                      "  const defaultAddr = addresses.find(function (a) { return a.isDefault; });",
+                      "  pm.expect(defaultAddr.id).to.equal(pm.environment.get('addressId'));",
+                      "  pm.expect(defaultAddr.title).to.equal('Home');",
+                      "});",
+                      "",
+                      "pm.test('the non-default address is Work', function () {",
+                      "  const addresses = pm.response.json().data.myAddresses;",
+                      "  const workAddr = addresses.find(function (a) { return !a.isDefault; });",
+                      "  pm.expect(workAddr.title).to.equal('Work');",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query MyAddresses {\n  myAddresses {\n    id\n    userID\n    title\n    addressLine1\n    city\n    state\n    postalCode\n    country\n    isDefault\n    createdAt\n    updatedAt\n  }\n}",
+                    "variables": "{}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "After creating two addresses, verify both exist and exactly one is marked as default."
+              }
+            },
+            {
+              "name": "Addresses By User ID",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const token = pm.environment.get('accessToken');",
+                      "if (!token) {",
+                      "  throw new Error('[AddressesByUserID pre-request] accessToken is not set. Run Login first.');",
+                      "}",
+                      "const userId = pm.environment.get('userId');",
+                      "if (!userId) {",
+                      "  throw new Error('[AddressesByUserID pre-request] userId is not set. Run Login first.');",
+                      "}",
+                      "console.log('[AddressesByUserID pre-request] querying addresses for userId:', userId);"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('No GraphQL errors', function () {",
+                      "  pm.expect(pm.response.json().errors).to.be.undefined;",
+                      "});",
+                      "",
+                      "pm.test('data.addressesByUserID is an array', function () {",
+                      "  pm.expect(pm.response.json().data.addressesByUserID).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test('addressesByUserID returns the same count as myAddresses (2)', function () {",
+                      "  pm.expect(pm.response.json().data.addressesByUserID.length).to.equal(2);",
+                      "});",
+                      "",
+                      "pm.test('addressesByUserID contains the created addressId', function () {",
+                      "  const addresses = pm.response.json().data.addressesByUserID;",
+                      "  const addressId = pm.environment.get('addressId');",
+                      "  const found = addresses.some(function (a) { return a.id === addressId; });",
+                      "  pm.expect(found).to.be.true;",
+                      "});",
+                      "",
+                      "pm.test('all returned addresses belong to the queried user', function () {",
+                      "  const addresses = pm.response.json().data.addressesByUserID;",
+                      "  const userId = pm.environment.get('userId');",
+                      "  addresses.forEach(function (a) {",
+                      "    pm.expect(a.userID).to.equal(userId);",
+                      "  });",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query AddressesByUserID($userID: UUID!) {\n  addressesByUserID(userID: $userID) {\n    id\n    userID\n    title\n    addressLine1\n    city\n    state\n    postalCode\n    country\n    isDefault\n    createdAt\n    updatedAt\n  }\n}",
+                    "variables": "{\n  \"userID\": \"{{userId}}\"\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Admin / lookup query: fetch all addresses for a given user ID. Results should match `myAddresses`."
+              }
+            },
+            {
+              "name": "Upsert Address \u2014 Unauthenticated (error path)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Intentionally send no Authorization header.",
+                      "console.log('[UpsertAddress unauth pre-request] sending request without token.');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('HTTP status is 200 (GraphQL transport)', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response body contains errors array for missing auth', function () {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.errors).to.be.an('array').and.have.length.above(0);",
+                      "});",
+                      "",
+                      "pm.test('data.upsertAddress is null when unauthenticated', function () {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.data === null || (body.data && body.data.upsertAddress === null)).to.be.true;",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation UpsertAddress($input: UpsertAddressInput!) {\n  upsertAddress(input: $input) {\n    id\n    title\n    city\n    country\n    isDefault\n  }\n}",
+                    "variables": "{\n  \"input\": {\n    \"title\": \"Unauthorized\",\n    \"addressLine1\": \"1 No Access Ave\",\n    \"city\": \"Nowhere\",\n    \"country\": \"US\",\n    \"isDefault\": false\n  }\n}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Error-path test: `upsertAddress` without an Authorization header must return a GraphQL `errors` array."
+              }
+            },
+            {
+              "name": "My Addresses \u2014 Unauthenticated (error path)",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Intentionally send no Authorization header.",
+                      "console.log('[MyAddresses unauth pre-request] sending request without token.');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('HTTP status is 200 (GraphQL transport)', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "pm.test('Response body contains errors array for missing auth', function () {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.errors).to.be.an('array').and.have.length.above(0);",
+                      "});",
+                      "",
+                      "pm.test('data.myAddresses is null when unauthenticated', function () {",
+                      "  const body = pm.response.json();",
+                      "  pm.expect(body.data === null || (body.data && body.data.myAddresses === null)).to.be.true;",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query MyAddresses {\n  myAddresses {\n    id\n    title\n    city\n    country\n    isDefault\n  }\n}",
+                    "variables": "{}"
+                  }
+                },
+                "url": {
+                  "raw": "{{graphqlEndpoint}}",
+                  "host": [ "{{graphqlEndpoint}}" ]
+                },
+                "description": "Error-path test: `myAddresses` without an Authorization header must return a GraphQL `errors` array."
+              }
+            }
+          ]
         }
       ]
     },

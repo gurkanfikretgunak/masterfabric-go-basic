@@ -56,15 +56,24 @@ type ComplexityRoot struct {
 	}
 
 	AdminUserProfile struct {
-		AvatarURL   func(childComplexity int) int
-		Bio         func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		DisplayName func(childComplexity int) int
-		Email       func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Role        func(childComplexity int) int
-		Status      func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
+		AvatarURL      func(childComplexity int) int
+		Bio            func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		DateOfBirth    func(childComplexity int) int
+		DisplayName    func(childComplexity int) int
+		Email          func(childComplexity int) int
+		Gender         func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Language       func(childComplexity int) int
+		Location       func(childComplexity int) int
+		PhoneNumber    func(childComplexity int) int
+		Role           func(childComplexity int) int
+		SocialGitHub   func(childComplexity int) int
+		SocialLinkedIn func(childComplexity int) int
+		SocialTwitter  func(childComplexity int) int
+		Status         func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+		WebsiteURL     func(childComplexity int) int
 	}
 
 	AppSetting struct {
@@ -98,26 +107,54 @@ type ComplexityRoot struct {
 		Register         func(childComplexity int, input model.RegisterInput) int
 		UpdateMySettings func(childComplexity int, input model.UserSettingsInput) int
 		UpdateProfile    func(childComplexity int, input model.UpdateProfileInput) int
+		UpsertAddress    func(childComplexity int, input model.UpsertAddressInput) int
 	}
 
 	Query struct {
-		AdminUser   func(childComplexity int, id uuid.UUID) int
-		AdminUsers  func(childComplexity int, page *int, pageSize *int) int
-		AppSettings func(childComplexity int) int
-		Me          func(childComplexity int) int
-		MySettings  func(childComplexity int) int
+		AddressesByUserID func(childComplexity int, userID uuid.UUID) int
+		AdminUser         func(childComplexity int, id uuid.UUID) int
+		AdminUsers        func(childComplexity int, page *int, pageSize *int) int
+		AppSettings       func(childComplexity int) int
+		Me                func(childComplexity int) int
+		MyAddresses       func(childComplexity int) int
+		MySettings        func(childComplexity int) int
+	}
+
+	UserAddress struct {
+		AddressLine1 func(childComplexity int) int
+		AddressLine2 func(childComplexity int) int
+		City         func(childComplexity int) int
+		Country      func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		IsDefault    func(childComplexity int) int
+		PostalCode   func(childComplexity int) int
+		State        func(childComplexity int) int
+		Title        func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		UserID       func(childComplexity int) int
 	}
 
 	UserProfile struct {
-		AvatarURL   func(childComplexity int) int
-		Bio         func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		DisplayName func(childComplexity int) int
-		Email       func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Role        func(childComplexity int) int
-		Status      func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
+		Address        func(childComplexity int) int
+		AvatarURL      func(childComplexity int) int
+		Bio            func(childComplexity int) int
+		CreatedAt      func(childComplexity int) int
+		DateOfBirth    func(childComplexity int) int
+		DisplayName    func(childComplexity int) int
+		Email          func(childComplexity int) int
+		Gender         func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Language       func(childComplexity int) int
+		Location       func(childComplexity int) int
+		PhoneNumber    func(childComplexity int) int
+		Role           func(childComplexity int) int
+		SocialGitHub   func(childComplexity int) int
+		SocialLinkedIn func(childComplexity int) int
+		SocialTwitter  func(childComplexity int) int
+		Status         func(childComplexity int) int
+		UpdatedAt      func(childComplexity int) int
+		WebsiteURL     func(childComplexity int) int
 	}
 
 	UserSettingsPayload struct {
@@ -141,6 +178,7 @@ type MutationResolver interface {
 	UpdateMySettings(ctx context.Context, input model.UserSettingsInput) (*model.UserSettingsPayload, error)
 	UpdateProfile(ctx context.Context, input model.UpdateProfileInput) (*model.UserProfile, error)
 	DeleteAccount(ctx context.Context) (bool, error)
+	UpsertAddress(ctx context.Context, input model.UpsertAddressInput) (*model.UserAddress, error)
 }
 type QueryResolver interface {
 	AdminUsers(ctx context.Context, page *int, pageSize *int) (*model.AdminUserList, error)
@@ -148,6 +186,8 @@ type QueryResolver interface {
 	MySettings(ctx context.Context) (*model.UserSettingsPayload, error)
 	AppSettings(ctx context.Context) ([]*model.AppSetting, error)
 	Me(ctx context.Context) (*model.UserProfile, error)
+	MyAddresses(ctx context.Context) ([]*model.UserAddress, error)
+	AddressesByUserID(ctx context.Context, userID uuid.UUID) ([]*model.UserAddress, error)
 }
 
 type executableSchema struct {
@@ -218,6 +258,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AdminUserProfile.CreatedAt(childComplexity), true
 
+	case "AdminUserProfile.dateOfBirth":
+		if e.complexity.AdminUserProfile.DateOfBirth == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.DateOfBirth(childComplexity), true
+
 	case "AdminUserProfile.displayName":
 		if e.complexity.AdminUserProfile.DisplayName == nil {
 			break
@@ -232,6 +279,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AdminUserProfile.Email(childComplexity), true
 
+	case "AdminUserProfile.gender":
+		if e.complexity.AdminUserProfile.Gender == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.Gender(childComplexity), true
+
 	case "AdminUserProfile.id":
 		if e.complexity.AdminUserProfile.ID == nil {
 			break
@@ -239,12 +293,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AdminUserProfile.ID(childComplexity), true
 
+	case "AdminUserProfile.language":
+		if e.complexity.AdminUserProfile.Language == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.Language(childComplexity), true
+
+	case "AdminUserProfile.location":
+		if e.complexity.AdminUserProfile.Location == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.Location(childComplexity), true
+
+	case "AdminUserProfile.phoneNumber":
+		if e.complexity.AdminUserProfile.PhoneNumber == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.PhoneNumber(childComplexity), true
+
 	case "AdminUserProfile.role":
 		if e.complexity.AdminUserProfile.Role == nil {
 			break
 		}
 
 		return e.complexity.AdminUserProfile.Role(childComplexity), true
+
+	case "AdminUserProfile.socialGitHub":
+		if e.complexity.AdminUserProfile.SocialGitHub == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.SocialGitHub(childComplexity), true
+
+	case "AdminUserProfile.socialLinkedIn":
+		if e.complexity.AdminUserProfile.SocialLinkedIn == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.SocialLinkedIn(childComplexity), true
+
+	case "AdminUserProfile.socialTwitter":
+		if e.complexity.AdminUserProfile.SocialTwitter == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.SocialTwitter(childComplexity), true
 
 	case "AdminUserProfile.status":
 		if e.complexity.AdminUserProfile.Status == nil {
@@ -259,6 +355,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AdminUserProfile.UpdatedAt(childComplexity), true
+
+	case "AdminUserProfile.websiteURL":
+		if e.complexity.AdminUserProfile.WebsiteURL == nil {
+			break
+		}
+
+		return e.complexity.AdminUserProfile.WebsiteURL(childComplexity), true
 
 	case "AppSetting.description":
 		if e.complexity.AppSetting.Description == nil {
@@ -447,6 +550,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateProfile(childComplexity, args["input"].(model.UpdateProfileInput)), true
 
+	case "Mutation.upsertAddress":
+		if e.complexity.Mutation.UpsertAddress == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_upsertAddress_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpsertAddress(childComplexity, args["input"].(model.UpsertAddressInput)), true
+
+	case "Query.addressesByUserID":
+		if e.complexity.Query.AddressesByUserID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_addressesByUserID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AddressesByUserID(childComplexity, args["userID"].(uuid.UUID)), true
+
 	case "Query.adminUser":
 		if e.complexity.Query.AdminUser == nil {
 			break
@@ -485,12 +612,110 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Me(childComplexity), true
 
+	case "Query.myAddresses":
+		if e.complexity.Query.MyAddresses == nil {
+			break
+		}
+
+		return e.complexity.Query.MyAddresses(childComplexity), true
+
 	case "Query.mySettings":
 		if e.complexity.Query.MySettings == nil {
 			break
 		}
 
 		return e.complexity.Query.MySettings(childComplexity), true
+
+	case "UserAddress.addressLine1":
+		if e.complexity.UserAddress.AddressLine1 == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.AddressLine1(childComplexity), true
+
+	case "UserAddress.addressLine2":
+		if e.complexity.UserAddress.AddressLine2 == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.AddressLine2(childComplexity), true
+
+	case "UserAddress.city":
+		if e.complexity.UserAddress.City == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.City(childComplexity), true
+
+	case "UserAddress.country":
+		if e.complexity.UserAddress.Country == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.Country(childComplexity), true
+
+	case "UserAddress.createdAt":
+		if e.complexity.UserAddress.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.CreatedAt(childComplexity), true
+
+	case "UserAddress.id":
+		if e.complexity.UserAddress.ID == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.ID(childComplexity), true
+
+	case "UserAddress.isDefault":
+		if e.complexity.UserAddress.IsDefault == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.IsDefault(childComplexity), true
+
+	case "UserAddress.postalCode":
+		if e.complexity.UserAddress.PostalCode == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.PostalCode(childComplexity), true
+
+	case "UserAddress.state":
+		if e.complexity.UserAddress.State == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.State(childComplexity), true
+
+	case "UserAddress.title":
+		if e.complexity.UserAddress.Title == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.Title(childComplexity), true
+
+	case "UserAddress.updatedAt":
+		if e.complexity.UserAddress.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.UpdatedAt(childComplexity), true
+
+	case "UserAddress.userID":
+		if e.complexity.UserAddress.UserID == nil {
+			break
+		}
+
+		return e.complexity.UserAddress.UserID(childComplexity), true
+
+	case "UserProfile.address":
+		if e.complexity.UserProfile.Address == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Address(childComplexity), true
 
 	case "UserProfile.avatarURL":
 		if e.complexity.UserProfile.AvatarURL == nil {
@@ -513,6 +738,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserProfile.CreatedAt(childComplexity), true
 
+	case "UserProfile.dateOfBirth":
+		if e.complexity.UserProfile.DateOfBirth == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.DateOfBirth(childComplexity), true
+
 	case "UserProfile.displayName":
 		if e.complexity.UserProfile.DisplayName == nil {
 			break
@@ -527,6 +759,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserProfile.Email(childComplexity), true
 
+	case "UserProfile.gender":
+		if e.complexity.UserProfile.Gender == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Gender(childComplexity), true
+
 	case "UserProfile.id":
 		if e.complexity.UserProfile.ID == nil {
 			break
@@ -534,12 +773,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserProfile.ID(childComplexity), true
 
+	case "UserProfile.language":
+		if e.complexity.UserProfile.Language == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Language(childComplexity), true
+
+	case "UserProfile.location":
+		if e.complexity.UserProfile.Location == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.Location(childComplexity), true
+
+	case "UserProfile.phoneNumber":
+		if e.complexity.UserProfile.PhoneNumber == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.PhoneNumber(childComplexity), true
+
 	case "UserProfile.role":
 		if e.complexity.UserProfile.Role == nil {
 			break
 		}
 
 		return e.complexity.UserProfile.Role(childComplexity), true
+
+	case "UserProfile.socialGitHub":
+		if e.complexity.UserProfile.SocialGitHub == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.SocialGitHub(childComplexity), true
+
+	case "UserProfile.socialLinkedIn":
+		if e.complexity.UserProfile.SocialLinkedIn == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.SocialLinkedIn(childComplexity), true
+
+	case "UserProfile.socialTwitter":
+		if e.complexity.UserProfile.SocialTwitter == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.SocialTwitter(childComplexity), true
 
 	case "UserProfile.status":
 		if e.complexity.UserProfile.Status == nil {
@@ -554,6 +835,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserProfile.UpdatedAt(childComplexity), true
+
+	case "UserProfile.websiteURL":
+		if e.complexity.UserProfile.WebsiteURL == nil {
+			break
+		}
+
+		return e.complexity.UserProfile.WebsiteURL(childComplexity), true
 
 	case "UserSettingsPayload.id":
 		if e.complexity.UserSettingsPayload.ID == nil {
@@ -617,6 +905,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputRefreshInput,
 		ec.unmarshalInputRegisterInput,
 		ec.unmarshalInputUpdateProfileInput,
+		ec.unmarshalInputUpsertAddressInput,
 		ec.unmarshalInputUserSettingsInput,
 	)
 	first := true
@@ -736,15 +1025,24 @@ extend type Mutation {
 # ── Response types ───────────────────────────────────────────────────────────
 
 type AdminUserProfile {
-  id:          UUID!
-  email:       String!
-  displayName: String!
-  avatarURL:   String!
-  bio:         String!
-  status:      UserStatus!
-  role:        UserRole!
-  createdAt:   Time!
-  updatedAt:   Time!
+  id:             UUID!
+  email:          String!
+  displayName:    String!
+  avatarURL:      String!
+  bio:            String!
+  status:         UserStatus!
+  role:           UserRole!
+  createdAt:      Time!
+  updatedAt:      Time!
+  phoneNumber:    String!
+  dateOfBirth:    String
+  gender:         Gender!
+  location:       String!
+  websiteURL:     String!
+  socialTwitter:  String!
+  socialGitHub:   String!
+  socialLinkedIn: String!
+  language:       String!
 }
 
 type AdminUserList {
@@ -872,6 +1170,12 @@ enum Theme {
 extend type Query {
   """Return the profile of the currently authenticated user."""
   me: UserProfile!
+
+  """Return all addresses for the currently authenticated user."""
+  myAddresses: [UserAddress!]!
+
+  """Return all addresses that belong to a specific user (admin or self)."""
+  addressesByUserID(userID: UUID!): [UserAddress!]!
 }
 
 extend type Mutation {
@@ -880,28 +1184,79 @@ extend type Mutation {
 
   """Permanently delete the authenticated user's account."""
   deleteAccount: Boolean!
+
+  """Create or update an address for the authenticated user.
+  Omit addressID to create a new address; provide it to update an existing one."""
+  upsertAddress(input: UpsertAddressInput!): UserAddress!
 }
 
 # ── Inputs ──────────────────────────────────────────────────────────────────
 
 input UpdateProfileInput {
-  displayName: String
-  avatarURL:   String
-  bio:         String
+  displayName:    String
+  avatarURL:      String
+  bio:            String
+  phoneNumber:    String
+  dateOfBirth:    String   # ISO-8601 date string (YYYY-MM-DD), parsed server-side
+  gender:         Gender
+  location:       String
+  websiteURL:     String
+  socialTwitter:  String
+  socialGitHub:   String
+  socialLinkedIn: String
+  language:       String
+}
+
+input UpsertAddressInput {
+  addressID:    UUID      # omit to create a new address; provide to update existing
+  title:        String    # e.g. "Home", "Work", "Billing"
+  addressLine1: String
+  addressLine2: String
+  city:         String
+  state:        String
+  postalCode:   String
+  country:      String
+  isDefault:    Boolean
 }
 
 # ── Response types ───────────────────────────────────────────────────────────
 
 type UserProfile {
-  id:          UUID!
-  email:       String!
-  displayName: String!
-  avatarURL:   String!
-  bio:         String!
-  status:      UserStatus!
-  role:        UserRole!
-  createdAt:   Time!
-  updatedAt:   Time!
+  id:             UUID!
+  email:          String!
+  displayName:    String!
+  avatarURL:      String!
+  bio:            String!
+  status:         UserStatus!
+  role:           UserRole!
+  createdAt:      Time!
+  updatedAt:      Time!
+  phoneNumber:    String!
+  dateOfBirth:    String
+  gender:         Gender!
+  location:       String!
+  websiteURL:     String!
+  socialTwitter:  String!
+  socialGitHub:   String!
+  socialLinkedIn: String!
+  language:       String!
+  """The user's default address, if one has been set."""
+  address:        UserAddress
+}
+
+type UserAddress {
+  id:           UUID!
+  userID:       UUID!
+  title:        String!
+  addressLine1: String!
+  addressLine2: String!
+  city:         String!
+  state:        String!
+  postalCode:   String!
+  country:      String!
+  isDefault:    Boolean!
+  createdAt:    Time!
+  updatedAt:    Time!
 }
 
 enum UserStatus {
@@ -915,6 +1270,15 @@ enum UserRole {
   MODERATOR
   USER
 }
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+  UNSPECIFIED
+}
+
 `, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
@@ -1233,6 +1597,38 @@ func (ec *executionContext) field_Mutation_updateProfile_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_upsertAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_Mutation_upsertAddress_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_upsertAddress_argsInput(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (model.UpsertAddressInput, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["input"]
+	if !ok {
+		var zeroVal model.UpsertAddressInput
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpsertAddressInput2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUpsertAddressInput(ctx, tmp)
+	}
+
+	var zeroVal model.UpsertAddressInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1262,6 +1658,38 @@ func (ec *executionContext) field_Query___type_argsName(
 	}
 
 	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_addressesByUserID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_Query_addressesByUserID_argsUserID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["userID"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_addressesByUserID_argsUserID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (uuid.UUID, error) {
+	// We won't call the directive if the argument is null.
+	// Set call_argument_directives_with_null to true to call directives
+	// even if the argument is null.
+	_, ok := rawArgs["userID"]
+	if !ok {
+		var zeroVal uuid.UUID
+		return zeroVal, nil
+	}
+
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+	if tmp, ok := rawArgs["userID"]; ok {
+		return ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+	}
+
+	var zeroVal uuid.UUID
 	return zeroVal, nil
 }
 
@@ -1485,6 +1913,24 @@ func (ec *executionContext) fieldContext_AdminUserList_users(_ context.Context, 
 				return ec.fieldContext_AdminUserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_AdminUserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_AdminUserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_AdminUserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_AdminUserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_AdminUserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_AdminUserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_AdminUserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_AdminUserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_AdminUserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_AdminUserProfile_language(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AdminUserProfile", field.Name)
 		},
@@ -2015,6 +2461,399 @@ func (ec *executionContext) fieldContext_AdminUserProfile_updatedAt(_ context.Co
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_phoneNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhoneNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_phoneNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_dateOfBirth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateOfBirth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_gender(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_gender(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Gender)
+	fc.Result = res
+	return ec.marshalNGender2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_gender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Gender does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_location(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_location(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_location(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_websiteURL(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_websiteURL(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WebsiteURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_websiteURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_socialTwitter(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_socialTwitter(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialTwitter, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_socialTwitter(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_socialGitHub(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_socialGitHub(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialGitHub, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_socialGitHub(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_socialLinkedIn(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_socialLinkedIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialLinkedIn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_socialLinkedIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUserProfile_language(ctx context.Context, field graphql.CollectedField, obj *model.AdminUserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AdminUserProfile_language(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Language, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AdminUserProfile_language(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2617,6 +3456,24 @@ func (ec *executionContext) fieldContext_Mutation_adminSuspendUser(ctx context.C
 				return ec.fieldContext_AdminUserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_AdminUserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_AdminUserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_AdminUserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_AdminUserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_AdminUserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_AdminUserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_AdminUserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_AdminUserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_AdminUserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_AdminUserProfile_language(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AdminUserProfile", field.Name)
 		},
@@ -2692,6 +3549,24 @@ func (ec *executionContext) fieldContext_Mutation_adminChangeRole(ctx context.Co
 				return ec.fieldContext_AdminUserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_AdminUserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_AdminUserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_AdminUserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_AdminUserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_AdminUserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_AdminUserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_AdminUserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_AdminUserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_AdminUserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_AdminUserProfile_language(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AdminUserProfile", field.Name)
 		},
@@ -3088,6 +3963,26 @@ func (ec *executionContext) fieldContext_Mutation_updateProfile(ctx context.Cont
 				return ec.fieldContext_UserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_UserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_UserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_UserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_UserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_UserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_UserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_UserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_UserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_UserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_UserProfile_language(ctx, field)
+			case "address":
+				return ec.fieldContext_UserProfile_address(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserProfile", field.Name)
 		},
@@ -3146,6 +4041,87 @@ func (ec *executionContext) fieldContext_Mutation_deleteAccount(_ context.Contex
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_upsertAddress(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_upsertAddress(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpsertAddress(rctx, fc.Args["input"].(model.UpsertAddressInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserAddress)
+	fc.Result = res
+	return ec.marshalNUserAddress2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_upsertAddress(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserAddress_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserAddress_userID(ctx, field)
+			case "title":
+				return ec.fieldContext_UserAddress_title(ctx, field)
+			case "addressLine1":
+				return ec.fieldContext_UserAddress_addressLine1(ctx, field)
+			case "addressLine2":
+				return ec.fieldContext_UserAddress_addressLine2(ctx, field)
+			case "city":
+				return ec.fieldContext_UserAddress_city(ctx, field)
+			case "state":
+				return ec.fieldContext_UserAddress_state(ctx, field)
+			case "postalCode":
+				return ec.fieldContext_UserAddress_postalCode(ctx, field)
+			case "country":
+				return ec.fieldContext_UserAddress_country(ctx, field)
+			case "isDefault":
+				return ec.fieldContext_UserAddress_isDefault(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_UserAddress_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_UserAddress_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserAddress", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_upsertAddress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3272,6 +4248,24 @@ func (ec *executionContext) fieldContext_Query_adminUser(ctx context.Context, fi
 				return ec.fieldContext_AdminUserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_AdminUserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_AdminUserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_AdminUserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_AdminUserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_AdminUserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_AdminUserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_AdminUserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_AdminUserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_AdminUserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_AdminUserProfile_language(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AdminUserProfile", field.Name)
 		},
@@ -3459,9 +4453,180 @@ func (ec *executionContext) fieldContext_Query_me(_ context.Context, field graph
 				return ec.fieldContext_UserProfile_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_UserProfile_updatedAt(ctx, field)
+			case "phoneNumber":
+				return ec.fieldContext_UserProfile_phoneNumber(ctx, field)
+			case "dateOfBirth":
+				return ec.fieldContext_UserProfile_dateOfBirth(ctx, field)
+			case "gender":
+				return ec.fieldContext_UserProfile_gender(ctx, field)
+			case "location":
+				return ec.fieldContext_UserProfile_location(ctx, field)
+			case "websiteURL":
+				return ec.fieldContext_UserProfile_websiteURL(ctx, field)
+			case "socialTwitter":
+				return ec.fieldContext_UserProfile_socialTwitter(ctx, field)
+			case "socialGitHub":
+				return ec.fieldContext_UserProfile_socialGitHub(ctx, field)
+			case "socialLinkedIn":
+				return ec.fieldContext_UserProfile_socialLinkedIn(ctx, field)
+			case "language":
+				return ec.fieldContext_UserProfile_language(ctx, field)
+			case "address":
+				return ec.fieldContext_UserProfile_address(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserProfile", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_myAddresses(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_myAddresses(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MyAddresses(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserAddress)
+	fc.Result = res
+	return ec.marshalNUserAddress2ᚕᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddressᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_myAddresses(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserAddress_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserAddress_userID(ctx, field)
+			case "title":
+				return ec.fieldContext_UserAddress_title(ctx, field)
+			case "addressLine1":
+				return ec.fieldContext_UserAddress_addressLine1(ctx, field)
+			case "addressLine2":
+				return ec.fieldContext_UserAddress_addressLine2(ctx, field)
+			case "city":
+				return ec.fieldContext_UserAddress_city(ctx, field)
+			case "state":
+				return ec.fieldContext_UserAddress_state(ctx, field)
+			case "postalCode":
+				return ec.fieldContext_UserAddress_postalCode(ctx, field)
+			case "country":
+				return ec.fieldContext_UserAddress_country(ctx, field)
+			case "isDefault":
+				return ec.fieldContext_UserAddress_isDefault(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_UserAddress_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_UserAddress_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserAddress", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_addressesByUserID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_addressesByUserID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AddressesByUserID(rctx, fc.Args["userID"].(uuid.UUID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.UserAddress)
+	fc.Result = res
+	return ec.marshalNUserAddress2ᚕᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddressᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_addressesByUserID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserAddress_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserAddress_userID(ctx, field)
+			case "title":
+				return ec.fieldContext_UserAddress_title(ctx, field)
+			case "addressLine1":
+				return ec.fieldContext_UserAddress_addressLine1(ctx, field)
+			case "addressLine2":
+				return ec.fieldContext_UserAddress_addressLine2(ctx, field)
+			case "city":
+				return ec.fieldContext_UserAddress_city(ctx, field)
+			case "state":
+				return ec.fieldContext_UserAddress_state(ctx, field)
+			case "postalCode":
+				return ec.fieldContext_UserAddress_postalCode(ctx, field)
+			case "country":
+				return ec.fieldContext_UserAddress_country(ctx, field)
+			case "isDefault":
+				return ec.fieldContext_UserAddress_isDefault(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_UserAddress_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_UserAddress_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserAddress", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_addressesByUserID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3590,6 +4755,534 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_id(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_userID(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_userID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_userID(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type UUID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_title(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_addressLine1(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_addressLine1(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressLine1, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_addressLine1(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_addressLine2(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_addressLine2(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressLine2, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_addressLine2(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_city(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_city(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.City, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_city(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_state(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_state(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_postalCode(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_postalCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PostalCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_postalCode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_country(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_country(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_country(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_isDefault(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_isDefault(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsDefault, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_isDefault(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAddress_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.UserAddress) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAddress_updatedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAddress_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAddress",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3986,6 +5679,466 @@ func (ec *executionContext) fieldContext_UserProfile_updatedAt(_ context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_phoneNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhoneNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_phoneNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_dateOfBirth(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateOfBirth, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_dateOfBirth(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_gender(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_gender(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Gender)
+	fc.Result = res
+	return ec.marshalNGender2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_gender(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Gender does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_location(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_location(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_location(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_websiteURL(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_websiteURL(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WebsiteURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_websiteURL(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_socialTwitter(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_socialTwitter(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialTwitter, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_socialTwitter(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_socialGitHub(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_socialGitHub(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialGitHub, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_socialGitHub(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_socialLinkedIn(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_socialLinkedIn(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocialLinkedIn, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_socialLinkedIn(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_language(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_language(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Language, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_language(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserProfile_address(ctx context.Context, field graphql.CollectedField, obj *model.UserProfile) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserProfile_address(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserAddress)
+	fc.Result = res
+	return ec.marshalOUserAddress2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserProfile_address(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_UserAddress_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_UserAddress_userID(ctx, field)
+			case "title":
+				return ec.fieldContext_UserAddress_title(ctx, field)
+			case "addressLine1":
+				return ec.fieldContext_UserAddress_addressLine1(ctx, field)
+			case "addressLine2":
+				return ec.fieldContext_UserAddress_addressLine2(ctx, field)
+			case "city":
+				return ec.fieldContext_UserAddress_city(ctx, field)
+			case "state":
+				return ec.fieldContext_UserAddress_state(ctx, field)
+			case "postalCode":
+				return ec.fieldContext_UserAddress_postalCode(ctx, field)
+			case "country":
+				return ec.fieldContext_UserAddress_country(ctx, field)
+			case "isDefault":
+				return ec.fieldContext_UserAddress_isDefault(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_UserAddress_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_UserAddress_updatedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserAddress", field.Name)
 		},
 	}
 	return fc, nil
@@ -6229,7 +8382,7 @@ func (ec *executionContext) unmarshalInputUpdateProfileInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"displayName", "avatarURL", "bio"}
+	fieldsInOrder := [...]string{"displayName", "avatarURL", "bio", "phoneNumber", "dateOfBirth", "gender", "location", "websiteURL", "socialTwitter", "socialGitHub", "socialLinkedIn", "language"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6257,6 +8410,152 @@ func (ec *executionContext) unmarshalInputUpdateProfileInput(ctx context.Context
 				return it, err
 			}
 			it.Bio = data
+		case "phoneNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PhoneNumber = data
+		case "dateOfBirth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateOfBirth"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DateOfBirth = data
+		case "gender":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			data, err := ec.unmarshalOGender2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gender = data
+		case "location":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("location"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Location = data
+		case "websiteURL":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("websiteURL"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.WebsiteURL = data
+		case "socialTwitter":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("socialTwitter"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SocialTwitter = data
+		case "socialGitHub":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("socialGitHub"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SocialGitHub = data
+		case "socialLinkedIn":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("socialLinkedIn"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SocialLinkedIn = data
+		case "language":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("language"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Language = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpsertAddressInput(ctx context.Context, obj interface{}) (model.UpsertAddressInput, error) {
+	var it model.UpsertAddressInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"addressID", "title", "addressLine1", "addressLine2", "city", "state", "postalCode", "country", "isDefault"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "addressID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressID"))
+			data, err := ec.unmarshalOUUID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "addressLine1":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine1"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressLine1 = data
+		case "addressLine2":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine2"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AddressLine2 = data
+		case "city":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.City = data
+		case "state":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.State = data
+		case "postalCode":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("postalCode"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PostalCode = data
+		case "country":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Country = data
+		case "isDefault":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isDefault"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsDefault = data
 		}
 	}
 
@@ -6426,6 +8725,48 @@ func (ec *executionContext) _AdminUserProfile(ctx context.Context, sel ast.Selec
 			}
 		case "updatedAt":
 			out.Values[i] = ec._AdminUserProfile_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "phoneNumber":
+			out.Values[i] = ec._AdminUserProfile_phoneNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dateOfBirth":
+			out.Values[i] = ec._AdminUserProfile_dateOfBirth(ctx, field, obj)
+		case "gender":
+			out.Values[i] = ec._AdminUserProfile_gender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "location":
+			out.Values[i] = ec._AdminUserProfile_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "websiteURL":
+			out.Values[i] = ec._AdminUserProfile_websiteURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialTwitter":
+			out.Values[i] = ec._AdminUserProfile_socialTwitter(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialGitHub":
+			out.Values[i] = ec._AdminUserProfile_socialGitHub(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialLinkedIn":
+			out.Values[i] = ec._AdminUserProfile_socialLinkedIn(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "language":
+			out.Values[i] = ec._AdminUserProfile_language(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6696,6 +9037,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "upsertAddress":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_upsertAddress(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6848,6 +9196,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "myAddresses":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_myAddresses(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "addressesByUserID":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_addressesByUserID(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -6856,6 +9248,100 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userAddressImplementors = []string{"UserAddress"}
+
+func (ec *executionContext) _UserAddress(ctx context.Context, sel ast.SelectionSet, obj *model.UserAddress) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userAddressImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserAddress")
+		case "id":
+			out.Values[i] = ec._UserAddress_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "userID":
+			out.Values[i] = ec._UserAddress_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._UserAddress_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addressLine1":
+			out.Values[i] = ec._UserAddress_addressLine1(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "addressLine2":
+			out.Values[i] = ec._UserAddress_addressLine2(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "city":
+			out.Values[i] = ec._UserAddress_city(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "state":
+			out.Values[i] = ec._UserAddress_state(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "postalCode":
+			out.Values[i] = ec._UserAddress_postalCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "country":
+			out.Values[i] = ec._UserAddress_country(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isDefault":
+			out.Values[i] = ec._UserAddress_isDefault(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._UserAddress_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._UserAddress_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6935,6 +9421,50 @@ func (ec *executionContext) _UserProfile(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "phoneNumber":
+			out.Values[i] = ec._UserProfile_phoneNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dateOfBirth":
+			out.Values[i] = ec._UserProfile_dateOfBirth(ctx, field, obj)
+		case "gender":
+			out.Values[i] = ec._UserProfile_gender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "location":
+			out.Values[i] = ec._UserProfile_location(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "websiteURL":
+			out.Values[i] = ec._UserProfile_websiteURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialTwitter":
+			out.Values[i] = ec._UserProfile_socialTwitter(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialGitHub":
+			out.Values[i] = ec._UserProfile_socialGitHub(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "socialLinkedIn":
+			out.Values[i] = ec._UserProfile_socialLinkedIn(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "language":
+			out.Values[i] = ec._UserProfile_language(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "address":
+			out.Values[i] = ec._UserProfile_address(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7518,6 +10048,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNGender2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx context.Context, v interface{}) (model.Gender, error) {
+	var res model.Gender
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNGender2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx context.Context, sel ast.SelectionSet, v model.Gender) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -7611,6 +10151,69 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 func (ec *executionContext) unmarshalNUpdateProfileInput2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUpdateProfileInput(ctx context.Context, v interface{}) (model.UpdateProfileInput, error) {
 	res, err := ec.unmarshalInputUpdateProfileInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpsertAddressInput2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUpsertAddressInput(ctx context.Context, v interface{}) (model.UpsertAddressInput, error) {
+	res, err := ec.unmarshalInputUpsertAddressInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUserAddress2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx context.Context, sel ast.SelectionSet, v model.UserAddress) graphql.Marshaler {
+	return ec._UserAddress(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserAddress2ᚕᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddressᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.UserAddress) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNUserAddress2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNUserAddress2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx context.Context, sel ast.SelectionSet, v *model.UserAddress) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UserAddress(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNUserProfile2githubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserProfile(ctx context.Context, sel ast.SelectionSet, v model.UserProfile) graphql.Marshaler {
@@ -7945,6 +10548,22 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) unmarshalOGender2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx context.Context, v interface{}) (*model.Gender, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Gender)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOGender2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐGender(ctx context.Context, sel ast.SelectionSet, v *model.Gender) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
@@ -7991,6 +10610,29 @@ func (ec *executionContext) marshalOTheme2ᚖgithubᚗcomᚋmasterfabricᚋmaste
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) unmarshalOUUID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v interface{}) (*uuid.UUID, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUUID(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUUID2ᚖgithubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, sel ast.SelectionSet, v *uuid.UUID) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalUUID(*v)
+	return res
+}
+
+func (ec *executionContext) marshalOUserAddress2ᚖgithubᚗcomᚋmasterfabricᚋmasterfabric_go_basicᚋinternalᚋinfrastructureᚋgraphqlᚋmodelᚐUserAddress(ctx context.Context, sel ast.SelectionSet, v *model.UserAddress) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserAddress(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

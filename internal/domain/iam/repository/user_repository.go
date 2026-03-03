@@ -18,4 +18,9 @@ type UserRepository interface {
 	// Admin operations
 	List(ctx context.Context, limit, offset int) ([]*model.User, error)
 	CountAll(ctx context.Context) (int, error)
+	// Address operations
+	CreateAddress(ctx context.Context, addr *model.UserAddress) error
+	UpsertAddress(ctx context.Context, addr *model.UserAddress) (*model.UserAddress, error)
+	FindAddressByUserID(ctx context.Context, userID uuid.UUID) ([]*model.UserAddress, error)
+	FindDefaultAddressByUserID(ctx context.Context, userID uuid.UUID) (*model.UserAddress, error)
 }

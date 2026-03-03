@@ -3,6 +3,12 @@
 extend type Query {
   """Return the profile of the currently authenticated user."""
   me: UserProfile!
+
+  """Return all addresses for the currently authenticated user."""
+  myAddresses: [UserAddress!]!
+
+  """Return all addresses that belong to a specific user (admin or self)."""
+  addressesByUserID(userID: UUID!): [UserAddress!]!
 }
 
 extend type Mutation {
@@ -11,28 +17,79 @@ extend type Mutation {
 
   """Permanently delete the authenticated user's account."""
   deleteAccount: Boolean!
+
+  """Create or update an address for the authenticated user.
+  Omit addressID to create a new address; provide it to update an existing one."""
+  upsertAddress(input: UpsertAddressInput!): UserAddress!
 }
 
 # ── Inputs ──────────────────────────────────────────────────────────────────
 
 input UpdateProfileInput {
-  displayName: String
-  avatarURL:   String
-  bio:         String
+  displayName:    String
+  avatarURL:      String
+  bio:            String
+  phoneNumber:    String
+  dateOfBirth:    String   # ISO-8601 date string (YYYY-MM-DD), parsed server-side
+  gender:         Gender
+  location:       String
+  websiteURL:     String
+  socialTwitter:  String
+  socialGitHub:   String
+  socialLinkedIn: String
+  language:       String
+}
+
+input UpsertAddressInput {
+  addressID:    UUID      # omit to create a new address; provide to update existing
+  title:        String    # e.g. "Home", "Work", "Billing"
+  addressLine1: String
+  addressLine2: String
+  city:         String
+  state:        String
+  postalCode:   String
+  country:      String
+  isDefault:    Boolean
 }
 
 # ── Response types ───────────────────────────────────────────────────────────
 
 type UserProfile {
-  id:          UUID!
-  email:       String!
-  displayName: String!
-  avatarURL:   String!
-  bio:         String!
-  status:      UserStatus!
-  role:        UserRole!
-  createdAt:   Time!
-  updatedAt:   Time!
+  id:             UUID!
+  email:          String!
+  displayName:    String!
+  avatarURL:      String!
+  bio:            String!
+  status:         UserStatus!
+  role:           UserRole!
+  createdAt:      Time!
+  updatedAt:      Time!
+  phoneNumber:    String!
+  dateOfBirth:    String
+  gender:         Gender!
+  location:       String!
+  websiteURL:     String!
+  socialTwitter:  String!
+  socialGitHub:   String!
+  socialLinkedIn: String!
+  language:       String!
+  """The user's default address, if one has been set."""
+  address:        UserAddress
+}
+
+type UserAddress {
+  id:           UUID!
+  userID:       UUID!
+  title:        String!
+  addressLine1: String!
+  addressLine2: String!
+  city:         String!
+  state:        String!
+  postalCode:   String!
+  country:      String!
+  isDefault:    Boolean!
+  createdAt:    Time!
+  updatedAt:    Time!
 }
 
 enum UserStatus {
@@ -46,3 +103,12 @@ enum UserRole {
   MODERATOR
   USER
 }
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+  UNSPECIFIED
+}
+

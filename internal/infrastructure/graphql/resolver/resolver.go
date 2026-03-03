@@ -19,9 +19,12 @@ type Resolver struct {
 	RefreshUC  *authUC.RefreshUseCase
 	LogoutUC   *authUC.LogoutUseCase
 	// User
-	GetProfileUC    *userUC.GetProfileUseCase
-	UpdateProfileUC *userUC.UpdateProfileUseCase
-	DeleteAccountUC *userUC.DeleteAccountUseCase
+	GetProfileUC        *userUC.GetProfileUseCase
+	UpdateProfileUC     *userUC.UpdateProfileUseCase
+	DeleteAccountUC     *userUC.DeleteAccountUseCase
+	GetAddressUC        *userUC.GetAddressUseCase
+	GetDefaultAddressUC *userUC.GetDefaultAddressUseCase
+	UpsertAddressUC     *userUC.UpsertAddressUseCase
 	// Settings
 	GetUserSettingsUC    *settingsUC.GetUserSettingsUseCase
 	UpdateUserSettingsUC *settingsUC.UpdateUserSettingsUseCase

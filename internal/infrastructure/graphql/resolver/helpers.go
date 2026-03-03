@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	adminDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/admin/dto"
 	authDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/auth/dto"
 	settingsDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/settings/dto"
 	userDTO "github.com/masterfabric/masterfabric_go_basic/internal/application/user/dto"
@@ -40,20 +41,38 @@ func authRespToPayload(resp *authDTO.AuthResponse) *model.AuthPayload {
 }
 
 // profileRespToModel converts a user profile DTO to the GraphQL UserProfile model.
-func profileRespToModel(resp *userDTO.UserProfileResponse) *model.UserProfile {
+// Pass a non-nil defaultAddr to populate the nested address field.
+func profileRespToModel(resp *userDTO.UserProfileResponse, defaultAddr *userDTO.AddressResponse) *model.UserProfile {
 	id, _ := uuid.Parse(resp.ID)
 	createdAt, _ := time.Parse(time.RFC3339, resp.CreatedAt)
 	updatedAt, _ := time.Parse(time.RFC3339, resp.UpdatedAt)
+
+	var dobStr *string
+	if resp.DateOfBirth != nil {
+		s := resp.DateOfBirth.Format("2006-01-02")
+		dobStr = &s
+	}
+
 	return &model.UserProfile{
-		ID:          id,
-		Email:       resp.Email,
-		DisplayName: resp.DisplayName,
-		AvatarURL:   resp.AvatarURL,
-		Bio:         resp.Bio,
-		Status:      model.UserStatus(toUpperStatus(resp.Status)),
-		Role:        graphqlRole(resp.Role),
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		ID:             id,
+		Email:          resp.Email,
+		DisplayName:    resp.DisplayName,
+		AvatarURL:      resp.AvatarURL,
+		Bio:            resp.Bio,
+		Status:         model.UserStatus(toUpperStatus(resp.Status)),
+		Role:           graphqlRole(resp.Role),
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+		PhoneNumber:    resp.PhoneNumber,
+		DateOfBirth:    dobStr,
+		Gender:         graphqlGender(resp.Gender),
+		Location:       resp.Location,
+		WebsiteURL:     resp.WebsiteURL,
+		SocialTwitter:  resp.SocialTwitter,
+		SocialGitHub:   resp.SocialGitHub,
+		SocialLinkedIn: resp.SocialLinkedIn,
+		Language:       resp.Language,
+		Address:        addressRespToModel(defaultAddr),
 	}
 }
 
@@ -117,5 +136,113 @@ func toUpperStatus(status string) string {
 		return "SUSPENDED"
 	default:
 		return "ACTIVE"
+	}
+}
+
+// adminUserToModel converts an admin DTO response to the GraphQL AdminUserProfile model.
+func adminUserToModel(resp *adminDTO.AdminUserResponse) *model.AdminUserProfile {
+	id, _ := uuid.Parse(resp.ID)
+	createdAt, _ := time.Parse(time.RFC3339, resp.CreatedAt)
+	updatedAt, _ := time.Parse(time.RFC3339, resp.UpdatedAt)
+
+	var dobStr *string
+	if resp.DateOfBirth != nil {
+		s := resp.DateOfBirth.Format("2006-01-02")
+		dobStr = &s
+	}
+
+	return &model.AdminUserProfile{
+		ID:             id,
+		Email:          resp.Email,
+		DisplayName:    resp.DisplayName,
+		AvatarURL:      resp.AvatarURL,
+		Bio:            resp.Bio,
+		Status:         model.UserStatus(toUpperStatus(resp.Status)),
+		Role:           graphqlRole(resp.Role),
+		CreatedAt:      createdAt,
+		UpdatedAt:      updatedAt,
+		PhoneNumber:    resp.PhoneNumber,
+		DateOfBirth:    dobStr,
+		Gender:         graphqlGender(resp.Gender),
+		Location:       resp.Location,
+		WebsiteURL:     resp.WebsiteURL,
+		SocialTwitter:  resp.SocialTwitter,
+		SocialGitHub:   resp.SocialGitHub,
+		SocialLinkedIn: resp.SocialLinkedIn,
+		Language:       resp.Language,
+	}
+}
+
+// graphqlRoleToString converts the GraphQL UserRole enum to the lowercase domain string
+// expected by use-case inputs (e.g. ChangeRoleRequest.Role).
+func graphqlRoleToString(role model.UserRole) string {
+	switch role {
+	case model.UserRoleAdmin:
+		return "admin"
+	case model.UserRoleModerator:
+		return "moderator"
+	default:
+		return "user"
+	}
+}
+
+// graphqlGender converts a lowercase domain gender string to the GraphQL Gender enum.
+func graphqlGender(g string) model.Gender {
+	switch g {
+	case "male":
+		return model.GenderMale
+	case "female":
+		return model.GenderFemale
+	case "other":
+		return model.GenderOther
+	case "prefer_not_to_say":
+		return model.GenderPreferNotToSay
+	default:
+		return model.GenderUnspecified
+	}
+}
+
+// genderToString converts the GraphQL Gender enum pointer to the lowercase domain string.
+// Returns "" (unspecified) when g is nil.
+func genderToString(g *model.Gender) string {
+	if g == nil {
+		return ""
+	}
+	switch *g {
+	case model.GenderMale:
+		return "male"
+	case model.GenderFemale:
+		return "female"
+	case model.GenderOther:
+		return "other"
+	case model.GenderPreferNotToSay:
+		return "prefer_not_to_say"
+	default:
+		return ""
+	}
+}
+
+// addressRespToModel converts an address DTO response to the GraphQL UserAddress model.
+func addressRespToModel(resp *userDTO.AddressResponse) *model.UserAddress {
+	if resp == nil {
+		return nil
+	}
+	id, _ := uuid.Parse(resp.ID)
+	userID, _ := uuid.Parse(resp.UserID)
+	createdAt, _ := time.Parse(time.RFC3339, resp.CreatedAt)
+	updatedAt, _ := time.Parse(time.RFC3339, resp.UpdatedAt)
+	return &model.UserAddress{
+		ID:           id,
+		UserID:       userID,
+		Title:        resp.Title,
+		AddressLine1: resp.AddressLine1,
+		AddressLine2: resp.AddressLine2,
+		City:         resp.City,
+		State:        resp.State,
+		PostalCode:   resp.PostalCode,
+		Country:      resp.Country,
+		IsDefault:    resp.IsDefault,
+		CreatedAt:    createdAt,
+		UpdatedAt:    updatedAt,
 	}
 }

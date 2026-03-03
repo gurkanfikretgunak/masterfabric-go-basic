@@ -19,15 +19,24 @@ extend type Mutation {
 # ── Response types ───────────────────────────────────────────────────────────
 
 type AdminUserProfile {
-  id:          UUID!
-  email:       String!
-  displayName: String!
-  avatarURL:   String!
-  bio:         String!
-  status:      UserStatus!
-  role:        UserRole!
-  createdAt:   Time!
-  updatedAt:   Time!
+  id:             UUID!
+  email:          String!
+  displayName:    String!
+  avatarURL:      String!
+  bio:            String!
+  status:         UserStatus!
+  role:           UserRole!
+  createdAt:      Time!
+  updatedAt:      Time!
+  phoneNumber:    String!
+  dateOfBirth:    String
+  gender:         Gender!
+  location:       String!
+  websiteURL:     String!
+  socialTwitter:  String!
+  socialGitHub:   String!
+  socialLinkedIn: String!
+  language:       String!
 }
 
 type AdminUserList {

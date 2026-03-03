@@ -11,6 +11,7 @@ type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
 	Redis    RedisConfig
+	Cache    CacheConfig
 	RabbitMQ RabbitMQConfig
 	JWT      JWTConfig
 	Log      LogConfig
@@ -36,6 +37,32 @@ type RedisConfig struct {
 	Addr     string
 	Password string
 	DB       int
+}
+
+// CacheConfig controls cache behaviour independent of the Redis connection.
+// TTL fields govern how long each class of entry lives in the cache.
+// KeyPrefix is prepended to every key (useful when multiple apps share a
+// Redis instance — leave empty to use the built-in "mf:" namespace).
+type CacheConfig struct {
+	// KeyPrefix is an optional additional namespace prefix (default: "").
+	KeyPrefix string
+
+	// DefaultTTL is used when no more-specific TTL applies.
+	DefaultTTL time.Duration
+
+	// TokenBlacklistTTL caps how long a blacklisted access token is tracked.
+	// Should be at least as long as JWT.AccessTokenTTL.
+	TokenBlacklistTTL time.Duration
+
+	// RefreshTokenTTL is the lifetime of refresh tokens in the cache.
+	// Should match JWT.RefreshTokenTTL.
+	RefreshTokenTTL time.Duration
+
+	// UserSettingsTTL is how long per-user settings are cached.
+	UserSettingsTTL time.Duration
+
+	// AppSettingsTTL is how long application-wide settings are cached.
+	AppSettingsTTL time.Duration
 }
 
 type RabbitMQConfig struct {
@@ -81,6 +108,14 @@ func Load() *Config {
 			Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       getEnvInt("REDIS_DB", 0),
+		},
+		Cache: CacheConfig{
+			KeyPrefix:         getEnv("CACHE_KEY_PREFIX", ""),
+			DefaultTTL:        getEnvDuration("CACHE_DEFAULT_TTL", 5*time.Minute),
+			TokenBlacklistTTL: getEnvDuration("CACHE_TOKEN_BLACKLIST_TTL", 15*time.Minute),
+			RefreshTokenTTL:   getEnvDuration("CACHE_REFRESH_TOKEN_TTL", 7*24*time.Hour),
+			UserSettingsTTL:   getEnvDuration("CACHE_USER_SETTINGS_TTL", 10*time.Minute),
+			AppSettingsTTL:    getEnvDuration("CACHE_APP_SETTINGS_TTL", 30*time.Minute),
 		},
 		RabbitMQ: RabbitMQConfig{
 			URL:      getEnv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/"),
