@@ -9,11 +9,11 @@ WORKDIR /app
 
 # Cache dependency downloads separately from source changes
 COPY go.mod go.sum ./
-RUN go mod download
+RUN GOTOOLCHAIN=local go mod download
 
 # Copy source and build
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOTOOLCHAIN=local \
     go build -trimpath -ldflags="-s -w" \
     -o /app/bin/server ./cmd/server
 
